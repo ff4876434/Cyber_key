@@ -72,6 +72,12 @@
             border-radius: 8px;
             user-select: all;
         }
+        .error-msg {
+            color: #ef4444;
+            font-size: 11px;
+            margin-top: 5px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -81,12 +87,12 @@
     <div id="stepBadge" class="step-badge">Марҳилаи 1 аз 3</div>
     
     <p id="instructionText" style="font-size: 12px; color: #9ca3af;">Барои гузаштан ба марҳилаи баъдӣ рекламаро дида, 15 сония интизор шавед.</p>
+    <div id="netError" class="error-msg">⚠️ Интернетро хомӯш накунед! Таймер истод.</div>
 
     <div class="ad-box">
         📢 <b>ҶОИ РЕКЛАМАИ ШУМО (Monetag / Adsterra)</b>
     </div>
 
-    <!-- 3 Тугмаи пайдарпай -->
     <button id="btn1" class="btn">▶ РЕКЛАМАИ 1 (15 сек)</button>
     <button id="btn2" class="btn" style="display:none;" disabled>🔒 РЕКЛАМАИ 2 (15 сек)</button>
     <button id="btn3" class="btn" style="display:none;" disabled>🔒 РЕКЛАМАИ 3 (15 сек)</button>
@@ -97,23 +103,41 @@
 
 <script>
     const myKey = "CYBER-FREE-2026";
-    const directLinkAd = "https://example.com"; // Линки рекламавии Direct Link-и худро дар ин ҷо гузор
+    const directLinkAd = "https://example.com"; 
 
-    function startTimer(button, nextStepFunction) {
+    let activeTimer = null;
+
+    function startTimer(button, nextStepFunction, originalText) {
+        // Санҷиши аввалияи интернет
+        if (!navigator.onLine) {
+            alert("Лутфан пайвасти интернетро фаъол кунед!");
+            return;
+        }
+
         let timeLeft = 15;
         button.disabled = true;
+        document.getElementById('netError').style.display = "none";
         
-        // Гузариш ба линки рекламавӣ (дар оинаи нав)
-        if(directLinkAd !== "https://example.com") {
+        if (directLinkAd !== "https://example.com") {
             window.open(directLinkAd, '_blank');
         }
 
-        const timer = setInterval(() => {
+        activeTimer = setInterval(() => {
+            // Санҷиши доимии интернет дар ҳар як сония
+            if (!navigator.onLine) {
+                clearInterval(activeTimer);
+                button.disabled = false;
+                button.innerText = originalText;
+                document.getElementById('netError').style.display = "block";
+                alert("Хатогӣ: Пайвасти интернет узиш ёфт! Марҳиларо аз нав сар кунед.");
+                return;
+            }
+
             timeLeft--;
             button.innerText = `⏳ ИНТИЗОР ШАВЕД (${timeLeft}s)...`;
             
             if (timeLeft <= 0) {
-                clearInterval(timer);
+                clearInterval(activeTimer);
                 nextStepFunction();
             }
         }, 1000);
@@ -128,7 +152,7 @@
             b2.disabled = false;
             b2.innerText = "▶ РЕКЛАМАИ 2 (15 сек)";
             document.getElementById('stepBadge').innerText = "Марҳилаи 2 аз 3";
-        });
+        }, "▶ РЕКЛАМАИ 1 (15 сек)");
     });
 
     // Қадами 2
@@ -140,7 +164,7 @@
             b3.disabled = false;
             b3.innerText = "▶ РЕКЛАМАИ 3 (15 сек)";
             document.getElementById('stepBadge').innerText = "Марҳилаи 3 аз 3";
-        });
+        }, "▶ РЕКЛАМАИ 2 (15 сек)");
     });
 
     // Қадами 3
@@ -150,11 +174,15 @@
             document.getElementById('stepBadge').innerText = "Муваффақият!";
             document.getElementById('instructionText').innerText = "Калиди шумо омода шуд!";
             document.getElementById('btnFinal').style.display = "block";
-        });
+        }, "▶ РЕКЛАМАИ 3 (15 сек)");
     });
 
-    // Гирифтани калид
+    // Гирифтани калид (бо санҷиши интернет)
     document.getElementById('btnFinal').addEventListener('click', function() {
+        if (!navigator.onLine) {
+            alert("Барои гирифтани калид интернет лозим аст!");
+            return;
+        }
         const keyDisplay = document.getElementById('keyDisplay');
         keyDisplay.innerText = myKey;
         keyDisplay.style.display = "block";
