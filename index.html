@@ -12,7 +12,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
         }
         .card {
@@ -33,22 +33,32 @@
             font-weight: bold;
             border-radius: 10px;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 10px;
             width: 100%;
         }
         .btn:disabled {
-            background-color: #334155;
-            color: #94a3b8;
+            background-color: #1e293b;
+            color: #64748b;
             cursor: not-allowed;
+            border: 1px solid #334155;
         }
         .ad-box {
             background-color: #111827;
             border: 1px dashed #00F0FF;
-            padding: 20px 10px;
+            padding: 15px 10px;
             margin: 15px 0;
             border-radius: 10px;
             color: #9ca3af;
             font-size: 13px;
+        }
+        .step-badge {
+            background: #1e293b;
+            color: #00F0FF;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            display: inline-block;
+            margin-bottom: 10px;
         }
         .key-box {
             margin-top: 15px;
@@ -68,38 +78,87 @@
 
 <div class="card">
     <h2 style="margin-top:0;">🔑 ГИРИФТАНИ КАЛИДИ VIP</h2>
-    <p style="font-size: 12px; color: #9ca3af;">Барои гирифтани калиди ройгон 15 сония интизор шавед ва рекламаро бубинед!</p>
+    <div id="stepBadge" class="step-badge">Марҳилаи 1 аз 3</div>
+    
+    <p id="instructionText" style="font-size: 12px; color: #9ca3af;">Барои гузаштан ба марҳилаи баъдӣ рекламаро дида, 15 сония интизор шавед.</p>
 
     <div class="ad-box">
-        📢 <b>ҶОИ РЕКЛАМАИ ШУМО</b>
+        📢 <b>ҶОИ РЕКЛАМАИ ШУМО (Monetag / Adsterra)</b>
     </div>
 
-    <button id="getKeyBtn" class="btn" disabled>⏳ ИНТИЗОР ШАВЕД (15)...</button>
+    <!-- 3 Тугмаи пайдарпай -->
+    <button id="btn1" class="btn">▶ РЕКЛАМАИ 1 (15 сек)</button>
+    <button id="btn2" class="btn" style="display:none;" disabled>🔒 РЕКЛАМАИ 2 (15 сек)</button>
+    <button id="btn3" class="btn" style="display:none;" disabled>🔒 РЕКЛАМАИ 3 (15 сек)</button>
+    <button id="btnFinal" class="btn" style="display:none; background-color: #00FF66;">🎁 ГИРИФТАНИ КАЛИД</button>
 
     <div id="keyDisplay" class="key-box"></div>
 </div>
 
 <script>
-    let timeLeft = 15;
-    const btn = document.getElementById('getKeyBtn');
-    const keyDisplay = document.getElementById('keyDisplay');
     const myKey = "CYBER-FREE-2026";
+    const directLinkAd = "https://example.com"; // Линки рекламавии Direct Link-и худро дар ин ҷо гузор
 
-    const timer = setInterval(() => {
-        timeLeft--;
-        btn.innerText = `⏳ ИНТИЗОР ШАВЕД (${timeLeft})...`;
+    function startTimer(button, nextStepFunction) {
+        let timeLeft = 15;
+        button.disabled = true;
         
-        if (timeLeft <= 0) {
-            clearInterval(timer);
-            btn.innerText = "🎁 ГИРИФТАНИ КАЛИД";
-            btn.disabled = false;
+        // Гузариш ба линки рекламавӣ (дар оинаи нав)
+        if(directLinkAd !== "https://example.com") {
+            window.open(directLinkAd, '_blank');
         }
-    }, 1000);
 
-    btn.addEventListener('click', () => {
+        const timer = setInterval(() => {
+            timeLeft--;
+            button.innerText = `⏳ ИНТИЗОР ШАВЕД (${timeLeft}s)...`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                nextStepFunction();
+            }
+        }, 1000);
+    }
+
+    // Қадами 1
+    document.getElementById('btn1').addEventListener('click', function() {
+        startTimer(this, () => {
+            this.style.display = "none";
+            const b2 = document.getElementById('btn2');
+            b2.style.display = "block";
+            b2.disabled = false;
+            b2.innerText = "▶ РЕКЛАМАИ 2 (15 сек)";
+            document.getElementById('stepBadge').innerText = "Марҳилаи 2 аз 3";
+        });
+    });
+
+    // Қадами 2
+    document.getElementById('btn2').addEventListener('click', function() {
+        startTimer(this, () => {
+            this.style.display = "none";
+            const b3 = document.getElementById('btn3');
+            b3.style.display = "block";
+            b3.disabled = false;
+            b3.innerText = "▶ РЕКЛАМАИ 3 (15 сек)";
+            document.getElementById('stepBadge').innerText = "Марҳилаи 3 аз 3";
+        });
+    });
+
+    // Қадами 3
+    document.getElementById('btn3').addEventListener('click', function() {
+        startTimer(this, () => {
+            this.style.display = "none";
+            document.getElementById('stepBadge').innerText = "Муваффақият!";
+            document.getElementById('instructionText').innerText = "Калиди шумо омода шуд!";
+            document.getElementById('btnFinal').style.display = "block";
+        });
+    });
+
+    // Гирифтани калид
+    document.getElementById('btnFinal').addEventListener('click', function() {
+        const keyDisplay = document.getElementById('keyDisplay');
         keyDisplay.innerText = myKey;
         keyDisplay.style.display = "block";
-        btn.style.display = "none";
+        this.style.display = "none";
     });
 </script>
 
