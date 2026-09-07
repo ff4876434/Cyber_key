@@ -72,6 +72,13 @@
             border-radius: 8px;
             user-select: all;
         }
+        .error-msg {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 8px;
+            display: none;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -81,6 +88,7 @@
     <div id="stepBadge" class="step-badge">Марҳилаи 1 аз 3</div>
     
     <p id="instructionText" style="font-size: 12px; color: #9ca3af;">Барои гузаштан ба марҳилаи баъдӣ рекламаро дида, 15 сония интизор шавед.</p>
+    <div id="netError" class="error-msg">⚠️ ИНТЕРНЕТИ ФАЪОЛ ЛОЗИМ АСТ!</div>
 
     <div class="ad-box">
         📢 <b>ҶОИ РЕКЛАМАИ ШУМО (Monetag / Adsterra)</b>
@@ -96,25 +104,47 @@
 
 <script>
     const myKey = "CYBER-FREE-2026";
-    const directLinkAd = "https://example.com"; // Линки рекламаи худро ин ҷо гузор
+    const directLinkAd = "https://example.com"; // Линки рекламаи худро инҷо гузор
 
-    function startTimer(button, nextStepFunction) {
+    function startTimer(button, nextStepFunction, originalText) {
+        // Санҷиши ҳолати интернет пеш аз сар шудан
+        if (!navigator.onLine) {
+            alert("Пайвасти интернет фаъол нест!");
+            return;
+        }
+
         let timeLeft = 15;
         button.disabled = true;
+        document.getElementById('netError').style.display = "none";
         
         if (directLinkAd !== "https://example.com") {
             window.open(directLinkAd, '_blank');
         }
 
+        // Истифодаи вақти воқеӣ (Timestamp) барои пешгирии фиреб бо интернети хомӯш
+        const startTime = Date.now();
+        const duration = 15000; // 15 сония ба миллисония
+
         const timer = setInterval(() => {
-            timeLeft--;
-            button.innerText = `⏳ ИНТИЗОР ШАВЕД (${timeLeft}s)...`;
-            
-            if (timeLeft <= 0) {
+            // Агар дар рафти таймер интернет хомӯш шавад
+            if (!navigator.onLine) {
+                clearInterval(timer);
+                button.disabled = false;
+                button.innerText = originalText;
+                document.getElementById('netError').style.display = "block";
+                return;
+            }
+
+            const elapsed = Date.now() - startTime;
+            let currentLeft = Math.ceil((duration - elapsed) / 1000);
+
+            if (currentLeft <= 0) {
                 clearInterval(timer);
                 nextStepFunction();
+            } else {
+                button.innerText = `⏳ ИНТИЗОР ШАВЕД (${currentLeft}s)...`;
             }
-        }, 1000);
+        }, 500);
     }
 
     // Қадами 1
@@ -126,7 +156,7 @@
             b2.disabled = false;
             b2.innerText = "▶ РЕКЛАМАИ 2 (15 сек)";
             document.getElementById('stepBadge').innerText = "Марҳилаи 2 аз 3";
-        });
+        }, "▶ РЕКЛАМАИ 1 (15 сек)");
     });
 
     // Қадами 2
@@ -135,11 +165,10 @@
             this.style.display = "none";
             const b3 = document.getElementById('btn3');
             b3.style.display = "block";
-            b3.disabled.value = false;
             b3.disabled = false;
             b3.innerText = "▶ РЕКЛАМАИ 3 (15 сек)";
             document.getElementById('stepBadge').innerText = "Марҳилаи 3 аз 3";
-        });
+        }, "▶ РЕКЛАМАИ 2 (15 сек)");
     });
 
     // Қадами 3
@@ -149,11 +178,15 @@
             document.getElementById('stepBadge').innerText = "Муваффақият!";
             document.getElementById('instructionText').innerText = "Калиди шумо омода шуд!";
             document.getElementById('btnFinal').style.display = "block";
-        });
+        }, "▶ РЕКЛАМАИ 3 (15 сек)");
     });
 
     // Гирифтани калид
     document.getElementById('btnFinal').addEventListener('click', function() {
+        if (!navigator.onLine) {
+            alert("Барои гирифтани калид интернет лозим аст!");
+            return;
+        }
         const keyDisplay = document.getElementById('keyDisplay');
         keyDisplay.innerText = myKey;
         keyDisplay.style.display = "block";
