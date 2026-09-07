@@ -74,9 +74,10 @@
         }
         .error-msg {
             color: #ef4444;
-            font-size: 11px;
-            margin-top: 5px;
+            font-size: 12px;
+            margin-top: 8px;
             display: none;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -87,7 +88,7 @@
     <div id="stepBadge" class="step-badge">Марҳилаи 1 аз 3</div>
     
     <p id="instructionText" style="font-size: 12px; color: #9ca3af;">Барои гузаштан ба марҳилаи баъдӣ рекламаро дида, 15 сония интизор шавед.</p>
-    <div id="netError" class="error-msg">⚠️ Интернетро хомӯш накунед! Таймер истод.</div>
+    <div id="netError" class="error-msg">⚠️ ИНТЕРНЕТ ХОМӮШ ШУД! ТАЙМЕР ИСТОД.</div>
 
     <div class="ad-box">
         📢 <b>ҶОИ РЕКЛАМАИ ШУМО (Monetag / Adsterra)</b>
@@ -107,9 +108,22 @@
 
     let activeTimer = null;
 
-    function startTimer(button, nextStepFunction, originalText) {
-        // Санҷиши аввалияи интернет
-        if (!navigator.onLine) {
+    // Санҷиши воқеии интернет тавассути Ping ба сервер
+    async function checkRealInternet() {
+        try {
+            const response = await fetch('https://httpbin.org/ping?t=' + new Date().getTime(), {
+                method: 'HEAD',
+                cache: 'no-store'
+            });
+            return response.ok;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    async function startTimer(button, nextStepFunction, originalText) {
+        const isOnline = await checkRealInternet();
+        if (!isOnline) {
             alert("Лутфан пайвасти интернетро фаъол кунед!");
             return;
         }
@@ -122,14 +136,16 @@
             window.open(directLinkAd, '_blank');
         }
 
-        activeTimer = setInterval(() => {
-            // Санҷиши доимии интернет дар ҳар як сония
-            if (!navigator.onLine) {
+        activeTimer = setInterval(async () => {
+            // Дар ҳар сония ба сервер дархост равон мешавад
+            const online = await checkRealInternet();
+            
+            if (!online) {
                 clearInterval(activeTimer);
                 button.disabled = false;
                 button.innerText = originalText;
                 document.getElementById('netError').style.display = "block";
-                alert("Хатогӣ: Пайвасти интернет узиш ёфт! Марҳиларо аз нав сар кунед.");
+                alert("Хатогӣ: Пайвасти интернет хомӯш шуд! Марҳила баргардонида шуд.");
                 return;
             }
 
@@ -177,9 +193,10 @@
         }, "▶ РЕКЛАМАИ 3 (15 сек)");
     });
 
-    // Гирифтани калид (бо санҷиши интернет)
-    document.getElementById('btnFinal').addEventListener('click', function() {
-        if (!navigator.onLine) {
+    // Гирифтани калид
+    document.getElementById('btnFinal').addEventListener('click', async function() {
+        const isOnline = await checkRealInternet();
+        if (!isOnline) {
             alert("Барои гирифтани калид интернет лозим аст!");
             return;
         }
