@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER HOST VIP KEY</title>
+    <title>CYBER VIP KEY GENERATOR</title>
+
+    <!-- ПАЙВАСТ КАРДАНИ FIREBASE -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         body {
             background-color: #030712;
-            color: #00F0FF;
+            color: #ffffff;
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
@@ -15,154 +20,159 @@
             min-height: 100vh;
             margin: 0;
         }
+
         .card {
-            background-color: #0C101D;
-            padding: 25px;
-            border-radius: 20px;
+            background: #0C101D;
             border: 2px solid #00F0FF;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+            border-radius: 20px;
+            padding: 30px;
             text-align: center;
-            width: 85%;
-            max-width: 350px;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+            max-width: 360px;
+            width: 90%;
         }
-        .btn {
-            background-color: #00F0FF;
+
+        h2 {
+            color: #00F0FF;
+            margin-bottom: 5px;
+            text-shadow: 0 0 8px #00F0FF;
+        }
+
+        p {
+            color: #64748B;
+            font-size: 11px;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+        }
+
+        .key-box {
+            background: #030712;
+            border: 1.5px dashed #00FF66;
+            color: #00FF66;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            word-break: break-all;
+            text-shadow: 0 0 5px #00FF66;
+        }
+
+        .btn-get {
+            background: #00F0FF;
             color: #000;
             border: none;
-            padding: 12px;
+            padding: 14px 20px;
+            font-size: 14px;
             font-weight: bold;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            margin-top: 10px;
             width: 100%;
-            text-decoration: none;
-            display: inline-block;
-            box-sizing: border-box;
+            transition: 0.3s;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
         }
-        .btn:disabled {
-            background-color: #1e293b;
-            color: #64748b;
+
+        .btn-get:disabled {
+            background: #334155;
+            color: #94A3B8;
             cursor: not-allowed;
-            border: 1px solid #334155;
-        }
-        .ad-box {
-            background-color: #111827;
-            border: 1px dashed #00F0FF;
-            padding: 15px 10px;
-            margin: 15px 0;
-            border-radius: 10px;
-            color: #9ca3af;
-            font-size: 13px;
-        }
-        .step-badge {
-            background: #1e293b;
-            color: #00F0FF;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-        .error-msg {
-            color: #ef4444;
-            font-size: 12px;
-            margin-top: 8px;
-            display: none;
-            font-weight: bold;
+            box-shadow: none;
         }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2 style="margin-top:0;">🔑 ГИРИФТАНИ КАЛИДИ VIP</h2>
-    <div id="stepBadge" class="step-badge">Марҳилаи 1 аз 3</div>
-    
-    <p id="instructionText" style="font-size: 12px; color: #9ca3af;">Барои гузаштан ба марҳилаи баъдӣ рекламаро дида, 15 сония интизор шавед.</p>
-    <div id="netError" class="error-msg">⚠️ Пайвасти интернет қатъ шуд!</div>
+    <div class="card">
+        <h2>CYBER HOST VIP</h2>
+        <p>СИСТЕМАИ ГИРИФТАНИ КАЛИДҲОИ ТАСОДУФӢ</p>
 
-    <div class="ad-box">
-        📢 <b>ҶОИ РЕКЛАМАИ ШУМО (Monetag / Adsterra)</b>
+        <!-- БЛОКИ НИШОН ДОДАНИ КАЛИД Ё ТАЙМЕР -->
+        <div id="keyDisplay" class="key-box">⏳ ИНТИЗОР ШАВЕД: 30s</div>
+
+        <!-- ТУГМАИ ГИРИФТАНИ КАЛИД (АВВАЛ ҒАЙРИФАЪОЛ АСТ) -->
+        <button id="mainBtn" onclick="getUniqueKeyForUser()" class="btn-get" disabled>⏳ ИНТИЗОРИИ 30 СОНИЯ...</button>
     </div>
 
-    <button id="btn1" class="btn">▶ РЕКЛАМАИ 1 (15 сек)</button>
-    <button id="btn2" class="btn" style="display:none;" disabled>🔒 РЕКЛАМАИ 2 (15 сек)</button>
-    <button id="btn3" class="btn" style="display:none;" disabled>🔒 РЕКЛАМАИ 3 (15 сек)</button>
-    
-    <!-- ЛИНКИ БОТИ АСЛИИ ТЕЛЕГРАМИ ШУМО -->
-    <a id="btnTelegram" href="https://t.me/cyber_host_2026_bot?start=from_website" target="_blank" class="btn" style="display:none; background-color: #00FF66; color: #000;">✈️ ГИРИФТАНИ КАЛИД ДАР TELEGRAM</a>
-</div>
-
-<script>
-    const directLinkAd = "https://example.com"; // Линки рекламаро оянда инҷо мемонед
-
-    function startTimer(button, nextStepFunction, originalText) {
-        if (!navigator.onLine) {
-            alert("Лутфан пайвасти интернетро фаъол кунед!");
-            return;
-        }
-
-        let timeLeft = 15;
-        button.disabled = true;
-        document.getElementById('netError').style.display = "none";
+    <script>
+        // 1. ТАНЗИМИ FIREBASE
+        const firebaseConfig = {
+            databaseURL: "https://cyberhostvip-default-rtdb.firebaseio.com/"
+        };
         
-        if (directLinkAd !== "https://example.com") {
-            window.open(directLinkAd, '_blank');
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        // 2. ТАЙМЕРИ 30-СОНИЯГӢ
+        let timeLeft = 30; // ТАРЗИ ДУРУСТИ 30 СОНИЯ
+        const keyDisplay = document.getElementById("keyDisplay");
+        const mainBtn = document.getElementById("mainBtn");
+
+        // Санҷиш: Агар корбар аллакай калид гирифта бошад, таймерро намемонем
+        const savedKey = localStorage.getItem("user_generated_key");
+        if (savedKey) {
+            keyDisplay.innerText = savedKey;
+            mainBtn.innerText = "🔑 КАЛИДИ ШУМО ОМОДА АСТ";
+            mainBtn.disabled = false;
+        } else {
+            // Оғози таймер
+            const timer = setInterval(() => {
+                timeLeft--;
+                keyDisplay.innerText = "⏳ ИНТИЗОР ШАВЕД: " + timeLeft + "s";
+                mainBtn.innerText = "⏳ ИНТИЗОРИИ " + timeLeft + " СОНИЯ...";
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    keyDisplay.innerText = "🔑 KEY: ---------------";
+                    mainBtn.innerText = "⚡ ГИРИФТАНИ КАЛИД";
+                    mainBtn.disabled = false; // Фаъол кардани тугма пас аз 30 сония
+                }
+            }, 1000);
         }
 
-        const timer = setInterval(() => {
-            if (!navigator.onLine) {
-                clearInterval(timer);
-                button.disabled = false;
-                button.innerText = originalText;
-                document.getElementById('netError').style.display = "block";
+        // 3. ФУНКСИЯИ ГИРИФТАНИ КАЛИДИ ТАСОДУФӢ
+        function getUniqueKeyForUser() {
+            const currentSaved = localStorage.getItem("user_generated_key");
+            if (currentSaved) {
+                keyDisplay.innerText = currentSaved;
+                alert("⚠️ Шумо аллакай калид гирифтаед!\n\nКалиди шумо: " + currentSaved);
                 return;
             }
 
-            timeLeft--;
-            button.innerText = `⏳ ИНТИЗОР ШАВЕД (${timeLeft}s)...`;
-            
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                nextStepFunction();
-            }
-        }, 1000);
-    }
+            db.ref('keys').once('value').then((snapshot) => {
+                const keysData = snapshot.val();
+                if (!keysData) {
+                    alert("❌ Ҳеҷ калиде дар база ёфт нашуд!");
+                    return;
+                }
 
-    // Марҳилаи 1
-    document.getElementById('btn1').addEventListener('click', function() {
-        startTimer(this, () => {
-            this.style.display = "none";
-            const b2 = document.getElementById('btn2');
-            b2.style.display = "block";
-            b2.disabled = false;
-            b2.innerText = "▶ РЕКЛАМАИ 2 (15 сек)";
-            document.getElementById('stepBadge').innerText = "Марҳилаи 2 аз 3";
-        }, "▶ РЕКЛАМАИ 1 (15 сек)");
-    });
+                const availableKeys = [];
+                Object.keys(keysData).forEach((key) => {
+                    const item = keysData[key];
+                    if (item.status === 'active' && (!item.hwid || item.hwid === '')) {
+                        availableKeys.push(key);
+                    }
+                });
 
-    // Марҳилаи 2
-    document.getElementById('btn2').addEventListener('click', function() {
-        startTimer(this, () => {
-            this.style.display = "none";
-            const b3 = document.getElementById('btn3');
-            b3.style.display = "block";
-            b3.disabled = false;
-            b3.innerText = "▶ РЕКЛАМАИ 3 (15 сек)";
-            document.getElementById('stepBadge').innerText = "Марҳилаи 3 аз 3";
-        }, "▶ РЕКЛАМАИ 2 (15 сек)");
-    });
+                if (availableKeys.length === 0) {
+                    alert("⚠️ Ҳоло калиди озод нест! Лутфан баъдтар кӯшиш кунед.");
+                    return;
+                }
 
-    // Марҳилаи 3
-    document.getElementById('btn3').addEventListener('click', function() {
-        startTimer(this, () => {
-            this.style.display = "none";
-            document.getElementById('stepBadge').innerText = "Муваффақият!";
-            document.getElementById('instructionText').innerText = "Рекламаҳо ба охир расиданд! Калидро дар Telegram гиред:";
-            document.getElementById('btnTelegram').style.display = "inline-block";
-        }, "▶ РЕКЛАМАИ 3 (15 сек)");
-    });
-</script>
+                const randomIndex = Math.floor(Math.random() * availableKeys.length);
+                const selectedKey = availableKeys[randomIndex];
 
+                localStorage.setItem("user_generated_key", selectedKey);
+
+                keyDisplay.innerText = selectedKey;
+                alert("✅ Калиди тасодуфии шумо:\n\n" + selectedKey);
+
+            }).catch((error) => {
+                console.error("Хатогӣ:", error);
+                alert("⚠️ Хатогии пайвастшавӣ ба база!");
+            });
+        }
+    </script>
 </body>
 </html>
