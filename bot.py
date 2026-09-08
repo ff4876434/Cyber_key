@@ -5,7 +5,7 @@ import telebot
 import firebase_admin
 from firebase_admin import credentials
 
-# 1. Веб-сервери Flask барои пешгирӣ аз хатогии Render (Port Timeout)
+# 1. Веб-сервери Flask барои Render
 app = Flask('')
 
 @app.route('/')
@@ -30,13 +30,13 @@ firebase_admin.initialize_app(cred, {
 })
 
 # 3. Пайвастшавӣ ба Боти Telegram
-BOT_TOKEN = "8831981869:AAFvZYTlvg747qzRScCSVnraNSWZi7mQDlo" # Токени пурраи худро дар ин ҷо монед
+BOT_TOKEN = "8831981869:AAFvZYTlvg747qzRScCSVnraNSWZi7mQDlo"
 bot = telebot.TeleBot(BOT_TOKEN)
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.reply_to(message, "Сaлом! Боти CYBER HOST VIP фаъол аст.")
 
-# 4. Ишғолкунӣ ва иҷрои бот
+# 4. Иҷрои бот
 if __name__ == "__main__":
     bot.infinity_polling()
