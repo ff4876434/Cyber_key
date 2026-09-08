@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CYBER VIP KEY GENERATOR</title>
 
+    <!-- FIREBASE SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         body {
             background-color: #030712;
@@ -42,14 +46,14 @@
             margin-bottom: 15px;
         }
 
-        /* ҶОЙИ РЕКЛАМА */
+        /* ҶОИ РЕКЛАМАҲО */
         .ad-container {
             background: #1e293b;
             border: 1px dashed #64748B;
             border-radius: 10px;
             padding: 15px;
             margin: 15px 0;
-            min-height: 90px;
+            min-height: 80px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -57,21 +61,23 @@
             font-size: 12px;
         }
 
-        .timer-box {
+        .key-box {
             background: #030712;
             border: 1.5px dashed #00FF66;
             color: #00FF66;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            padding: 12px;
+            padding: 14px;
             border-radius: 12px;
             margin: 15px 0;
+            word-break: break-all;
             text-shadow: 0 0 5px #00FF66;
+            user-select: all;
         }
 
-        .btn-telegram {
-            background: #24A1DE;
-            color: #ffffff;
+        .btn-get {
+            background: #00F0FF;
+            color: #000;
             border: none;
             padding: 14px 20px;
             font-size: 14px;
@@ -80,10 +86,10 @@
             cursor: pointer;
             width: 100%;
             transition: 0.3s;
-            box-shadow: 0 0 10px rgba(36, 161, 222, 0.5);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
         }
 
-        .btn-telegram:disabled {
+        .btn-get:disabled {
             background: #334155;
             color: #94A3B8;
             cursor: not-allowed;
@@ -95,50 +101,113 @@
 
     <div class="card">
         <h2>CYBER HOST VIP</h2>
-        <p>СИСТЕМАИ ГИРИФТАНИ КАЛИД ДАР TELEGRAM</p>
+        <p>СИСТЕМАИ ГИРИФТАНИ КАЛИДИ VIP</p>
 
-        <!-- РЕКЛАМАИ БОЛОИ -->
+        <!-- БЛОКИ РЕКЛАМАИ 1 -->
         <div class="ad-container">
-            📢 РЕКЛАМАИ 1 (КОДИ ADSTERRA / ADSENSE)
+            📢 РЕКЛАМАИ БОЛОИ (КОДИ ADSTERRA)
         </div>
 
-        <!-- ТАЙМЕРИ 30 СОНИЯ -->
-        <div id="timerDisplay" class="timer-box">⏳ ИНТИЗОР ШАВЕД: 30s</div>
+        <!-- ТАЙМЕР / ҶОИ КАЛИД -->
+        <div id="keyDisplay" class="key-box">⏳ ИНТИЗОР ШАВЕД: 30s</div>
 
-        <!-- РЕКЛАМАИ ПАЁНИ -->
+        <!-- БЛОКИ РЕКЛАМАИ 2 -->
         <div class="ad-container">
-            📢 РЕКЛАМАИ 2 (КОДИ ADSTERRA / ADSENSE)
+            📢 РЕКЛАМАИ ПАЁНИ (КОДИ ADSTERRA)
         </div>
 
-        <!-- ТУГМАИ ГУЗАРИШ БА БОТ -->
-        <button id="tgBtn" onclick="goToBot()" class="btn-telegram" disabled>⏳ ИНТИЗОРИИ 30 СОНИЯ...</button>
+        <!-- ТУГМА -->
+        <button id="mainBtn" onclick="getKeyDirectly()" class="btn-get" disabled>⏳ ИНТИЗОРИИ 30 СОНИЯ...</button>
     </div>
 
     <script>
-        // ЮЗЕРНЕЙМИ ДУРУСТИ БОТИ ШУМО:
-        const BOT_USERNAME = "cyber_host_2026_bot"; 
+        // PAyVAST БА FIREBASE REALTIME DATABASE
+        const firebaseConfig = {
+            databaseURL: "https://cyberhostvip-default-rtdb.firebaseio.com/"
+        };
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
 
         let timeLeft = 30;
-        const timerDisplay = document.getElementById("timerDisplay");
-        const tgBtn = document.getElementById("tgBtn");
+        const keyDisplay = document.getElementById("keyDisplay");
+        const mainBtn = document.getElementById("mainBtn");
 
-        // Таймери 30-сониягӣ
-        const timer = setInterval(() => {
-            timeLeft--;
-            timerDisplay.innerText = "⏳ ИНТИЗОР ШАВЕД: " + timeLeft + "s";
-            tgBtn.innerText = "⏳ ИНТИЗОРИИ " + timeLeft + " СОНИЯ...";
+        // Санҷиш: Агар корбар пештар калид гирифта бошад
+        const localKey = localStorage.getItem("cyber_vip_key");
+        if (localKey) {
+            keyDisplay.innerText = localKey;
+            mainBtn.innerText = "🔑 КАЛИДИ ШУМО ОМОДА АСТ";
+            mainBtn.disabled = false;
+        } else {
+            // Ҳисоби ақиби 30 сония
+            const timer = setInterval(() => {
+                timeLeft--;
+                keyDisplay.innerText = "⏳ ИНТИЗОР ШАВЕД: " + timeLeft + "s";
+                mainBtn.innerText = "⏳ ИНТИЗОРИИ " + timeLeft + " СОНИЯ...";
 
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                timerDisplay.innerText = "✅ ТАМАМ ШУД!";
-                tgBtn.innerText = "✈️ ГИРИФТАНИ КАЛИД ДАР TELEGRAM";
-                tgBtn.disabled = false;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    keyDisplay.innerText = "🔑 KEY: ---------------";
+                    mainBtn.innerText = "⚡ ГИРИФТАНИ КАЛИД";
+                    mainBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        // Функсияи гирифтани калид аз Firebase
+        function getKeyDirectly() {
+            const saved = localStorage.getItem("cyber_vip_key");
+            if (saved) {
+                keyDisplay.innerText = saved;
+                alert("⚠️ Шумо аллакай калид гирифтаед:\n\n" + saved);
+                return;
             }
-        }, 1000);
 
-        function goToBot() {
-            // Гузариши дуруст ба бот
-            window.location.href = `https://t.me/${BOT_USERNAME}?start=from_website`;
+            mainBtn.innerText = "⏳ ДАР ҲОЛИ ОМОДАСОЗӢ...";
+            mainBtn.disabled = true;
+
+            db.ref('keys').once('value').then((snapshot) => {
+                const keysData = snapshot.val();
+                if (!keysData) {
+                    alert("❌ Ҳеҷ калиде дар база ёфт нашуд!");
+                    mainBtn.innerText = "⚡ ГИРИФТАНИ КАЛИД";
+                    mainBtn.disabled = false;
+                    return;
+                }
+
+                const availableKeys = [];
+                Object.keys(keysData).forEach((k) => {
+                    if (keysData[k].status === 'active') {
+                        availableKeys.push(k);
+                    }
+                });
+
+                if (availableKeys.length === 0) {
+                    alert("⚠️ Ҳоло калиди озод нест!");
+                    mainBtn.innerText = "⚡ ГИРИФТАНИ КАЛИД";
+                    mainBtn.disabled = false;
+                    return;
+                }
+
+                // Тасодуфӣ интихоб кардани як калид
+                const randomKey = availableKeys[Math.floor(Math.random() * availableKeys.length)];
+
+                // Сабт дар браузери корбар (ки аз нав гирифта натавонад)
+                localStorage.setItem("cyber_vip_key", randomKey);
+
+                keyDisplay.innerText = randomKey;
+                mainBtn.innerText = "✅ КАЛИД ГИРИФТА ШУД";
+                alert("✅ Калиди шумо омода шуд:\n\n" + randomKey);
+
+            }).catch((err) => {
+                console.error(err);
+                alert("❌ Хатогӣ дар пайвастшавӣ ба база!");
+                mainBtn.innerText = "⚡ ГИРИФТАНИ КАЛИД";
+                mainBtn.disabled = false;
+            });
         }
     </script>
 </body>
