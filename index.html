@@ -49,7 +49,7 @@
             border-radius: 10px;
             padding: 15px;
             margin: 15px 0;
-            min-height: 100px;
+            min-height: 90px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -97,34 +97,32 @@
         <h2>CYBER HOST VIP</h2>
         <p>СИСТЕМАИ ГИРИФТАНИ КАЛИД ДАР TELEGRAM</p>
 
-        <!-- БЛОКИ РЕКЛАМАИ 1 (БОЛОИ ТАЙМЕР) -->
+        <!-- РЕКЛАМАИ БОЛОИ -->
         <div class="ad-container">
-            <!-- КОДИ РЕКЛАМАИ ХУДРО (АДСТЕРРА / ГУГЛ) ИНҶО БЕГУЗОРЕД -->
-            📢 РЕКЛАМАИ БОЛОИИ ШУМО (ADSTERRA / ADSENSE)
+            📢 РЕКЛАМАИ 1 (КОДИ ADSTERRA / ADSENSE)
         </div>
 
         <!-- ТАЙМЕРИ 30 СОНИЯ -->
         <div id="timerDisplay" class="timer-box">⏳ ИНТИЗОР ШАВЕД: 30s</div>
 
-        <!-- БЛОКИ РЕКЛАМАИ 2 (ЗЕРИ ТАЙМЕР) -->
+        <!-- РЕКЛАМАИ ПАЁНИ -->
         <div class="ad-container">
-            <!-- КОДИ РЕКЛАМАИ ХУДРО (АДСТЕРРА / ГУГЛ) ИНҶО БЕГУЗОРЕД -->
-            📢 РЕКЛАМАИ ПАЁНИИ ШУМО (ADSTERRA / ADSENSE)
+            📢 РЕКЛАМАИ 2 (КОДИ ADSTERRA / ADSENSE)
         </div>
 
-        <!-- ТУГМАИ ГУЗАРИШ БА БОТИ ТЕЛЕГРАМ -->
+        <!-- ТУГМАИ ГУЗАРИШ БА БОТ -->
         <button id="tgBtn" onclick="goToBot()" class="btn-telegram" disabled>⏳ ИНТИЗОРИИ 30 СОНИЯ...</button>
     </div>
 
     <script>
-        // ЮЗЕРНЕЙМИ БОТИ ХУДРО (БЕ @) ИНҶО НАВИСЕД:
-        const BOT_USERNAME = "CYBER"; 
+        // ЮЗЕРНЕЙМИ ДУРУСТИ БОТИ ШУМО:
+        const BOT_USERNAME = "cyber_host_2026_bot"; 
 
         let timeLeft = 30;
         const timerDisplay = document.getElementById("timerDisplay");
         const tgBtn = document.getElementById("tgBtn");
 
-        // Ҳисоби ақиб барои 30 сония
+        // Таймери 30-сониягӣ
         const timer = setInterval(() => {
             timeLeft--;
             timerDisplay.innerText = "⏳ ИНТИЗОР ШАВЕД: " + timeLeft + "s";
@@ -132,14 +130,14 @@
 
             if (timeLeft <= 0) {
                 clearInterval(timer);
-                timerDisplay.innerText = "✅ ТАМOМ ШУД!";
+                timerDisplay.innerText = "✅ ТАМАМ ШУД!";
                 tgBtn.innerText = "✈️ ГИРИФТАНИ КАЛИД ДАР TELEGRAM";
                 tgBtn.disabled = false;
             }
         }, 1000);
 
         function goToBot() {
-            // Интиқоли корбар ба боти шумо бо параметри start
+            // Гузариши дуруст ба бот
             window.location.href = `https://t.me/${BOT_USERNAME}?start=from_website`;
         }
     </script>
