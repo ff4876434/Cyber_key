@@ -35,6 +35,9 @@
             cursor: pointer;
             margin-top: 10px;
             width: 100%;
+            text-decoration: none;
+            display: inline-block;
+            box-sizing: border-box;
         }
         .btn:disabled {
             background-color: #1e293b;
@@ -60,18 +63,6 @@
             display: inline-block;
             margin-bottom: 10px;
         }
-        .key-box {
-            margin-top: 15px;
-            padding: 12px;
-            background: #052E16;
-            border: 1px solid #00FF66;
-            color: #00FF66;
-            font-weight: bold;
-            display: none;
-            font-size: 16px;
-            border-radius: 8px;
-            user-select: all;
-        }
         .error-msg {
             color: #ef4444;
             font-size: 12px;
@@ -88,7 +79,7 @@
     <div id="stepBadge" class="step-badge">Марҳилаи 1 аз 3</div>
     
     <p id="instructionText" style="font-size: 12px; color: #9ca3af;">Барои гузаштан ба марҳилаи баъдӣ рекламаро дида, 15 сония интизор шавед.</p>
-    <div id="netError" class="error-msg">⚠️ ИНТЕРНЕТ РОҲ НАМЕДИҲАД! ТАЙМЕР ИСТОД.</div>
+    <div id="netError" class="error-msg">⚠️ Пайвасти интернет қатъ шуд!</div>
 
     <div class="ad-box">
         📢 <b>ҶОИ РЕКЛАМАИ ШУМО (Monetag / Adsterra)</b>
@@ -97,39 +88,17 @@
     <button id="btn1" class="btn">▶ РЕКЛАМАИ 1 (15 сек)</button>
     <button id="btn2" class="btn" style="display:none;" disabled>🔒 РЕКЛАМАИ 2 (15 сек)</button>
     <button id="btn3" class="btn" style="display:none;" disabled>🔒 РЕКЛАМАИ 3 (15 сек)</button>
-    <button id="btnFinal" class="btn" style="display:none; background-color: #00FF66;">🎁 ГИРИФТАНИ КАЛИД</button>
-
-    <div id="keyDisplay" class="key-box"></div>
+    
+    <!-- ЛИНКИ БОТИ АСЛИИ ТЕЛЕГРАМИ ШУМО -->
+    <a id="btnTelegram" href="https://t.me/cyber_host_2026_bot?start=from_website" target="_blank" class="btn" style="display:none; background-color: #00FF66; color: #000;">✈️ ГИРИФТАНИ КАЛИД ДАР TELEGRAM</a>
 </div>
 
 <script>
-    const myKey = "CYBER-FREE-2026";
-    const directLinkAd = "https://example.com"; // Линки рекламаи худро инҷо гузор
+    const directLinkAd = "https://example.com"; // Линки рекламаро оянда инҷо мемонед
 
-    // Ин функсия тафтиш мекунад ки оё интернет ҳақиқатан кор мекунад ё на
-    async function checkInternetConnection() {
-        try {
-            // Дархост ба ягон манбаи беруна бо вақтсанҷ (Timeout)
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 2000);
-            
-            const response = await fetch('https://www.google.com/favicon.ico', {
-                mode: 'no-cors',
-                signal: controller.signal,
-                cache: 'no-store'
-            });
-            clearTimeout(timeoutId);
-            return true;
-        } catch (error) {
-            return false;
-        }
-    }
-
-    async function startTimer(button, nextStepFunction, originalText) {
-        // Пеш аз сар кардан санҷиши интернет
-        let onlineCheck = await checkInternetConnection();
-        if (!onlineCheck) {
-            alert("Пайвасти интернет нест! Лутфан интернетро фаъол кунед.");
+    function startTimer(button, nextStepFunction, originalText) {
+        if (!navigator.onLine) {
+            alert("Лутфан пайвасти интернетро фаъол кунед!");
             return;
         }
 
@@ -141,11 +110,8 @@
             window.open(directLinkAd, '_blank');
         }
 
-        const timer = setInterval(async () => {
-            // Дар ҳар як сония санҷиши воқеии интернет
-            let isConnected = await checkInternetConnection();
-
-            if (!isConnected) {
+        const timer = setInterval(() => {
+            if (!navigator.onLine) {
                 clearInterval(timer);
                 button.disabled = false;
                 button.innerText = originalText;
@@ -163,7 +129,7 @@
         }, 1000);
     }
 
-    // Қадами 1
+    // Марҳилаи 1
     document.getElementById('btn1').addEventListener('click', function() {
         startTimer(this, () => {
             this.style.display = "none";
@@ -175,7 +141,7 @@
         }, "▶ РЕКЛАМАИ 1 (15 сек)");
     });
 
-    // Қадами 2
+    // Марҳилаи 2
     document.getElementById('btn2').addEventListener('click', function() {
         startTimer(this, () => {
             this.style.display = "none";
@@ -187,27 +153,14 @@
         }, "▶ РЕКЛАМАИ 2 (15 сек)");
     });
 
-    // Қадами 3
+    // Марҳилаи 3
     document.getElementById('btn3').addEventListener('click', function() {
         startTimer(this, () => {
             this.style.display = "none";
             document.getElementById('stepBadge').innerText = "Муваффақият!";
-            document.getElementById('instructionText').innerText = "Калиди шумо омода шуд!";
-            document.getElementById('btnFinal').style.display = "block";
+            document.getElementById('instructionText').innerText = "Рекламаҳо ба охир расиданд! Калидро дар Telegram гиред:";
+            document.getElementById('btnTelegram').style.display = "inline-block";
         }, "▶ РЕКЛАМАИ 3 (15 сек)");
-    });
-
-    // Гирифтани калид
-    document.getElementById('btnFinal').addEventListener('click', async function() {
-        let onlineCheck = await checkInternetConnection();
-        if (!onlineCheck) {
-            alert("Барои гирифтани калид интернет лозим аст!");
-            return;
-        }
-        const keyDisplay = document.getElementById('keyDisplay');
-        keyDisplay.innerText = myKey;
-        keyDisplay.style.display = "block";
-        this.style.display = "none";
     });
 </script>
 
