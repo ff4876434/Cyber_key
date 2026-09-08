@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CYBER VIP KEY GENERATOR</title>
 
-    <!-- ПАЙВАСТ КАРДАНИ FIREBASE -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
     <style>
         body {
             background-color: #030712;
@@ -45,22 +41,21 @@
             margin-bottom: 25px;
         }
 
-        .key-box {
+        .timer-box {
             background: #030712;
             border: 1.5px dashed #00FF66;
             color: #00FF66;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             padding: 15px;
             border-radius: 12px;
             margin-bottom: 20px;
-            word-break: break-all;
             text-shadow: 0 0 5px #00FF66;
         }
 
-        .btn-get {
-            background: #00F0FF;
-            color: #000;
+        .btn-telegram {
+            background: #24A1DE;
+            color: #ffffff;
             border: none;
             padding: 14px 20px;
             font-size: 14px;
@@ -69,10 +64,13 @@
             cursor: pointer;
             width: 100%;
             transition: 0.3s;
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+            box-shadow: 0 0 10px rgba(36, 161, 222, 0.5);
+            text-decoration: none;
+            display: inline-block;
+            box-sizing: border-box;
         }
 
-        .btn-get:disabled {
+        .btn-telegram:disabled {
             background: #334155;
             color: #94A3B8;
             cursor: not-allowed;
@@ -84,94 +82,40 @@
 
     <div class="card">
         <h2>CYBER HOST VIP</h2>
-        <p>СИСТЕМАИ ГИРИФТАНИ КАЛИДҲОИ ТАСОДУФӢ</p>
+        <p>СИСТЕМАИ ГИРИФТАНИ КАЛИД ДАР TELEGRAM</p>
 
-        <!-- БЛОКИ НИШОН ДОДАНИ КАЛИД Ё ТАЙМЕР -->
-        <div id="keyDisplay" class="key-box">⏳ ИНТИЗОР ШАВЕД: 30s</div>
+        <!-- ТАЙМЕР -->
+        <div id="timerDisplay" class="timer-box">⏳ ИНТИЗОР ШАВЕД: 30s</div>
 
-        <!-- ТУГМАИ ГИРИФТАНИ КАЛИД (АВВАЛ ҒАЙРИФАЪОЛ АСТ) -->
-        <button id="mainBtn" onclick="getUniqueKeyForUser()" class="btn-get" disabled>⏳ ИНТИЗОРИИ 30 СОНИЯ...</button>
+        <!-- ТУГМАИ ГУЗАРИШ БА БОТ -->
+        <button id="tgBtn" onclick="goToBot()" class="btn-telegram" disabled>⏳ ИНТИЗОРИИ 30 СОНИЯ...</button>
     </div>
 
     <script>
-        // 1. ТАНЗИМИ FIREBASE
-        const firebaseConfig = {
-            databaseURL: "https://cyberhostvip-default-rtdb.firebaseio.com/"
-        };
-        
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.database();
+        // ЮЗЕРНЕЙМИ БОТИ ХУДРО ИНҶО БАҶОИ 'cyber_bot' БЕНАВИСЕД (БЕ @)
+        const BOT_USERNAME = "CYBER_HOST_BOT"; 
 
-        // 2. ТАЙМЕРИ 30-СОНИЯГӢ
-        let timeLeft = 30; // ТАРЗИ ДУРУСТИ 30 СОНИЯ
-        const keyDisplay = document.getElementById("keyDisplay");
-        const mainBtn = document.getElementById("mainBtn");
+        let timeLeft = 30;
+        const timerDisplay = document.getElementById("timerDisplay");
+        const tgBtn = document.getElementById("tgBtn");
 
-        // Санҷиш: Агар корбар аллакай калид гирифта бошад, таймерро намемонем
-        const savedKey = localStorage.getItem("user_generated_key");
-        if (savedKey) {
-            keyDisplay.innerText = savedKey;
-            mainBtn.innerText = "🔑 КАЛИДИ ШУМО ОМОДА АСТ";
-            mainBtn.disabled = false;
-        } else {
-            // Оғози таймер
-            const timer = setInterval(() => {
-                timeLeft--;
-                keyDisplay.innerText = "⏳ ИНТИЗОР ШАВЕД: " + timeLeft + "s";
-                mainBtn.innerText = "⏳ ИНТИЗОРИИ " + timeLeft + " СОНИЯ...";
+        // Оғози таймери 30-сониягӣ
+        const timer = setInterval(() => {
+            timeLeft--;
+            timerDisplay.innerText = "⏳ ИНТИЗОР ШАВЕД: " + timeLeft + "s";
+            tgBtn.innerText = "⏳ ИНТИЗОРИИ " + timeLeft + " СОНИЯ...";
 
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    keyDisplay.innerText = "🔑 KEY: ---------------";
-                    mainBtn.innerText = "⚡ ГИРИФТАНИ КАЛИД";
-                    mainBtn.disabled = false; // Фаъол кардани тугма пас аз 30 сония
-                }
-            }, 1000);
-        }
-
-        // 3. ФУНКСИЯИ ГИРИФТАНИ КАЛИДИ ТАСОДУФӢ
-        function getUniqueKeyForUser() {
-            const currentSaved = localStorage.getItem("user_generated_key");
-            if (currentSaved) {
-                keyDisplay.innerText = currentSaved;
-                alert("⚠️ Шумо аллакай калид гирифтаед!\n\nКалиди шумо: " + currentSaved);
-                return;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                timerDisplay.innerText = "✅ ТАМАМ ШУД!";
+                tgBtn.innerText = "✈️ ГИРИФТАНИ КАЛИД ДАР TELEGRAM";
+                tgBtn.disabled = false;
             }
+        }, 1000);
 
-            db.ref('keys').once('value').then((snapshot) => {
-                const keysData = snapshot.val();
-                if (!keysData) {
-                    alert("❌ Ҳеҷ калиде дар база ёфт нашуд!");
-                    return;
-                }
-
-                const availableKeys = [];
-                Object.keys(keysData).forEach((key) => {
-                    const item = keysData[key];
-                    if (item.status === 'active' && (!item.hwid || item.hwid === '')) {
-                        availableKeys.push(key);
-                    }
-                });
-
-                if (availableKeys.length === 0) {
-                    alert("⚠️ Ҳоло калиди озод нест! Лутфан баъдтар кӯшиш кунед.");
-                    return;
-                }
-
-                const randomIndex = Math.floor(Math.random() * availableKeys.length);
-                const selectedKey = availableKeys[randomIndex];
-
-                localStorage.setItem("user_generated_key", selectedKey);
-
-                keyDisplay.innerText = selectedKey;
-                alert("✅ Калиди тасодуфии шумо:\n\n" + selectedKey);
-
-            }).catch((error) => {
-                console.error("Хатогӣ:", error);
-                alert("⚠️ Хатогии пайвастшавӣ ба база!");
-            });
+        function goToBot() {
+            // Гузариш ба бот бо параметри from_website
+            window.location.href = `https://t.me/${BOT_USERNAME}?start=from_website`;
         }
     </script>
 </body>
