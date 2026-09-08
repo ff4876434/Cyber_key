@@ -15,6 +15,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            padding: 10px;
         }
 
         .card {
@@ -22,10 +23,10 @@
             border: 2px solid #00F0FF;
             box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
             border-radius: 20px;
-            padding: 30px;
+            padding: 20px;
             text-align: center;
-            max-width: 360px;
-            width: 90%;
+            max-width: 380px;
+            width: 100%;
         }
 
         h2 {
@@ -38,7 +39,22 @@
             color: #64748B;
             font-size: 11px;
             letter-spacing: 1px;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
+        }
+
+        /* ҶОЙИ РЕКЛАМА */
+        .ad-container {
+            background: #1e293b;
+            border: 1px dashed #64748B;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #94A3B8;
+            font-size: 12px;
         }
 
         .timer-box {
@@ -47,9 +63,9 @@
             color: #00FF66;
             font-size: 18px;
             font-weight: bold;
-            padding: 15px;
+            padding: 12px;
             border-radius: 12px;
-            margin-bottom: 20px;
+            margin: 15px 0;
             text-shadow: 0 0 5px #00FF66;
         }
 
@@ -65,9 +81,6 @@
             width: 100%;
             transition: 0.3s;
             box-shadow: 0 0 10px rgba(36, 161, 222, 0.5);
-            text-decoration: none;
-            display: inline-block;
-            box-sizing: border-box;
         }
 
         .btn-telegram:disabled {
@@ -84,22 +97,34 @@
         <h2>CYBER HOST VIP</h2>
         <p>СИСТЕМАИ ГИРИФТАНИ КАЛИД ДАР TELEGRAM</p>
 
-        <!-- ТАЙМЕР -->
+        <!-- БЛОКИ РЕКЛАМАИ 1 (БОЛОИ ТАЙМЕР) -->
+        <div class="ad-container">
+            <!-- КОДИ РЕКЛАМАИ ХУДРО (АДСТЕРРА / ГУГЛ) ИНҶО БЕГУЗОРЕД -->
+            📢 РЕКЛАМАИ БОЛОИИ ШУМО (ADSTERRA / ADSENSE)
+        </div>
+
+        <!-- ТАЙМЕРИ 30 СОНИЯ -->
         <div id="timerDisplay" class="timer-box">⏳ ИНТИЗОР ШАВЕД: 30s</div>
 
-        <!-- ТУГМАИ ГУЗАРИШ БА БОТ -->
+        <!-- БЛОКИ РЕКЛАМАИ 2 (ЗЕРИ ТАЙМЕР) -->
+        <div class="ad-container">
+            <!-- КОДИ РЕКЛАМАИ ХУДРО (АДСТЕРРА / ГУГЛ) ИНҶО БЕГУЗОРЕД -->
+            📢 РЕКЛАМАИ ПАЁНИИ ШУМО (ADSTERRA / ADSENSE)
+        </div>
+
+        <!-- ТУГМАИ ГУЗАРИШ БА БОТИ ТЕЛЕГРАМ -->
         <button id="tgBtn" onclick="goToBot()" class="btn-telegram" disabled>⏳ ИНТИЗОРИИ 30 СОНИЯ...</button>
     </div>
 
     <script>
-        // ЮЗЕРНЕЙМИ БОТИ ХУДРО ИНҶО БАҶОИ 'cyber_bot' БЕНАВИСЕД (БЕ @)
-        const BOT_USERNAME = "CYBER_HOST_BOT"; 
+        // ЮЗЕРНЕЙМИ БОТИ ХУДРО (БЕ @) ИНҶО НАВИСЕД:
+        const BOT_USERNAME = "CYBER"; 
 
         let timeLeft = 30;
         const timerDisplay = document.getElementById("timerDisplay");
         const tgBtn = document.getElementById("tgBtn");
 
-        // Оғози таймери 30-сониягӣ
+        // Ҳисоби ақиб барои 30 сония
         const timer = setInterval(() => {
             timeLeft--;
             timerDisplay.innerText = "⏳ ИНТИЗОР ШАВЕД: " + timeLeft + "s";
@@ -107,14 +132,14 @@
 
             if (timeLeft <= 0) {
                 clearInterval(timer);
-                timerDisplay.innerText = "✅ ТАМАМ ШУД!";
+                timerDisplay.innerText = "✅ ТАМOМ ШУД!";
                 tgBtn.innerText = "✈️ ГИРИФТАНИ КАЛИД ДАР TELEGRAM";
                 tgBtn.disabled = false;
             }
         }, 1000);
 
         function goToBot() {
-            // Гузариш ба бот бо параметри from_website
+            // Интиқоли корбар ба боти шумо бо параметри start
             window.location.href = `https://t.me/${BOT_USERNAME}?start=from_website`;
         }
     </script>
