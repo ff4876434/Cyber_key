@@ -3,9 +3,9 @@ from threading import Thread
 from flask import Flask
 import telebot
 import firebase_admin
-from firebase_admin import credentials
+from firebase_admin import credentials, firestore
 
-# 1. Веб-сервери Flask барои Render
+# --- WEB SERVER БАРОИ 24/7 ХОСТИНГ ДАР RENDER ---
 app = Flask('')
 
 @app.route('/')
@@ -13,30 +13,55 @@ def home():
     return "Bot is running 24/7!"
 
 def run():
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=8080)
 
 def keep_alive():
     t = Thread(target=run)
-    t.daemon = True
     t.start()
 
-keep_alive()
+# --- ПАЙВАСТШАВӢ БА FIREBASE ---
+try:
+    cred = credentials.Certificate("serviceAccountKey.json")
+    firebase_admin.initialize_app(cred)
+    db = firestore.client()
+    print("Firebase connected successfully!")
+except Exception as e:
+    print(f"Firebase Error: {e}")
 
-# 2. Пайвастшавӣ ба Firebase
-cred = credentials.Certificate('serviceAccountKey.json')
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://cyberhostvip-default-rtdb.firebaseio.com/'
-})
+# --- ТОКЕНИ АСЛИИ БОТИ ШУМО ---
+TOKEN = "8831981869:AAFvZYTlvg747qzRScCSVnraNSWZi7mQDlo"
+bot = telebot.TeleBot(TOKEN)
 
-# 3. Пайвастшавӣ ба Боти Telegram
-BOT_TOKEN = "8831981869:AAFvZYTlvg747qzRScCSVnraNSWZi7mQDlo"
-bot = telebot.TeleBot(BOT_TOKEN)
-
+# --- ФАРМОНИ /START ВА САНҶИШИ ЛИНКИ СОМОНА ---
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.reply_to(message, "Сaлом! Боти CYBER HOST VIP фаъол аст.")
+    args = message.text.split()
+    
+    # Санҷиши гузариш аз сомона (?start=from_website)
+    if len(args) > 1 and args[1] == "from_website":
+        try:
+            # Аз коллексияи 'keys' калиди озодро меҷӯяд
+            keys_ref = db.collection('keys').where('is_used', '==', False).limit(1)
+            docs = list(keys_ref.stream())
+            
+            if len(docs) > 0:
+                key_doc = docs[0]
+                key_data = key_doc.to_dict()
+                actual_key = key_data.get('key_value')
+                
+                # Мақоми калидро ба истифодашуда (true) табдил медиҳад
+                db.collection('keys').document(key_doc.id).update({'is_used': True})
+                
+                bot.reply_to(message, f"🎉 Ташаккур! Рекламаро гузаштед.\n\n🔑 Калиди VIP-и шумо:\n`{actual_key}`", parse_mode="Markdown")
+            else:
+                bot.reply_to(message, "⚠️ Мутаассифона, ҳоло калидҳои озод дар база тамом шудаанд!")
+        except Exception as e:
+            bot.reply_to(message, "⚠️ Хатогӣ дар пайвастшавӣ ба базаи калидҳо.")
+    else:
+        # Агар касе бе сомона мустақиман ботро кушояд
+        bot.reply_to(message, "❌ Салом! Барои гирифтани калид аввал ба сайти мо рафта, 3 рекламаро дида, тугмаи Telegram-ро пахш кунед.")
 
-# 4. Иҷрои бот
 if __name__ == "__main__":
+    keep_alive()
+    print("Bot startup successfully...")
     bot.infinity_polling()
