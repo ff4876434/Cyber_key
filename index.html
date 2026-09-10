@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CYBER VIP KEY GENERATOR</title>
 
+    <!-- FIREBASE SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -45,6 +46,7 @@
             margin-bottom: 15px;
         }
 
+        /* ҶОИ РЕКЛАМАҲО */
         .ad-container {
             background: #1e293b;
             border: 1px dashed #64748B;
@@ -101,20 +103,25 @@
         <h2>CYBER HOST VIP</h2>
         <p>СИСТЕМАИ ГИРИФТАНИ КАЛИДИ VIP</p>
 
+        <!-- БЛОКИ РЕКЛАМАИ 1 -->
         <div class="ad-container">
             📢 РЕКЛАМАИ БОЛОИ (КОДИ ADSTERRA)
         </div>
 
+        <!-- ТАЙМЕР / ҶОИ КАЛИД -->
         <div id="keyDisplay" class="key-box">⏳ ИНТИЗОР ШАВЕД...</div>
 
+        <!-- БЛОКИ РЕКЛАМАИ 2 -->
         <div class="ad-container">
             📢 РЕКЛАМАИ ПАЁНИ (КОДИ ADSTERRA)
         </div>
 
+        <!-- ТУГМА -->
         <button id="mainBtn" onclick="getKeyDirectly()" class="btn-get" disabled>⏳ ИНТИЗОРИИ СОНИЯҲО...</button>
     </div>
 
     <script>
+        // PAyVAST БА FIREBASE REALTIME DATABASE
         const firebaseConfig = {
             databaseURL: "https://cyberhostvip-default-rtdb.firebaseio.com/"
         };
@@ -127,26 +134,23 @@
         const keyDisplay = document.getElementById("keyDisplay");
         const mainBtn = document.getElementById("mainBtn");
 
-        const localKey = localStorage.getItem("cyber_vip_key");
+        let timerInterval = null;
 
-        if (localKey) {
-            keyDisplay.innerText = localKey;
-            mainBtn.innerText = "🔑 КАЛИДИ ШУМО ОМОДА АСТ";
-            mainBtn.disabled = false;
-        } else {
-            initTimer();
-        }
+        // Оғози кор ҳангоми боз шудани саҳифа
+        initPage();
 
-        function initTimer() {
-            // Мӯҳлати таймер 30 сония
-            const DURATION = 30 * 1000; 
-            let targetTime = localStorage.getItem("cyber_target_time");
-
-            // Агар интернет хомӯш бошад ё бори аввал бошад, вақтро аз нав месозем
+        function initPage() {
             if (!navigator.onLine) {
                 showOfflineState();
                 return;
             }
+            startTimer();
+        }
+
+        function startTimer() {
+            stopTimer();
+            const DURATION = 30 * 1000; // 30 сония
+            let targetTime = localStorage.getItem("cyber_target_time");
 
             if (!targetTime) {
                 targetTime = Date.now() + DURATION;
@@ -155,10 +159,9 @@
                 targetTime = parseInt(targetTime);
             }
 
-            const timer = setInterval(() => {
-                // Агар ҳангоми сонияшуморӣ интернет хомӯш шавад
+            timerInterval = setInterval(() => {
                 if (!navigator.onLine) {
-                    clearInterval(timer);
+                    stopTimer();
                     showOfflineState();
                     return;
                 }
@@ -167,7 +170,7 @@
                 const timeLeft = Math.ceil((targetTime - now) / 1000);
 
                 if (timeLeft <= 0) {
-                    clearInterval(timer);
+                    stopTimer();
                     localStorage.removeItem("cyber_target_time");
                     keyDisplay.innerText = "🔑 KEY: ---------------";
                     mainBtn.innerText = "⚡ ГИРИФТАНИ КАЛИД";
@@ -179,36 +182,32 @@
             }, 500);
         }
 
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
         function showOfflineState() {
             keyDisplay.innerText = "❌ ИНТЕРНЕТ ФАЪОЛ НЕСТ!";
             mainBtn.innerText = "⚠️ ИНТЕРНЕТРО ФАЪОЛ КУНЕД";
             mainBtn.disabled = true;
         }
 
-        // Вақте интернет дубора пайваст мешавад, таймер аз нав кунуни мешавад
+        // НАЗОРАТИ АВТОМАТИИ ИНТЕРНЕТ (Online / Offline Events)
         window.addEventListener('online', () => {
-            if (!localStorage.getItem("cyber_vip_key")) {
-                // Тоза кардани вақти кӯҳна, то ки таймер аз 30 сония аз нав сар шавад
-                localStorage.removeItem("cyber_target_time");
-                initTimer();
-            }
+            localStorage.removeItem("cyber_target_time");
+            initPage();
         });
 
         window.addEventListener('offline', () => {
-            if (!localStorage.getItem("cyber_vip_key")) {
-                showOfflineState();
-            }
+            stopTimer();
+            showOfflineState();
         });
 
         // Функсияи гирифтани калид аз Firebase
         function getKeyDirectly() {
-            const saved = localStorage.getItem("cyber_vip_key");
-            if (saved) {
-                keyDisplay.innerText = saved;
-                alert("⚠️ Шумо аллакай калид гирифтаед:\n\n" + saved);
-                return;
-            }
-
             if (!navigator.onLine) {
                 alert("❌ Интернет фаъол нест! Лутфан интернетро пайваст кунед.");
                 showOfflineState();
@@ -229,27 +228,32 @@
 
                 const availableKeys = [];
                 Object.keys(keysData).forEach((k) => {
+                    // Танҳо калидҳои фаъолро, ки HWID надоранд (ба касе пайваст нашудаанд) мегирем
                     if (keysData[k].status === 'active' && (!keysData[k].hwid || keysData[k].hwid === '')) {
                         availableKeys.push(k);
                     }
                 });
 
                 if (availableKeys.length === 0) {
-                    alert("⚠️ Ҳоло калиди озод нест!");
+                    alert("⚠️ Ҳоло калиди озод нест! Лутфан баъдтар кӯшиш кунед.");
                     mainBtn.innerText = "⚡ ГИРИФТАНИ КАЛИД";
                     mainBtn.disabled = false;
                     return;
                 }
 
+                // Тасодуфӣ интихоб кардани як калиди нав
                 const randomKey = availableKeys[Math.floor(Math.random() * availableKeys.length)];
+
+                // Тоза кардани хотираи кӯҳна ва сабти калиди нав
+                localStorage.removeItem("cyber_vip_key");
                 localStorage.setItem("cyber_vip_key", randomKey);
 
-                // Тоза кардани вақти таймер баъди гирифтани калид
+                // Тоза кардани вақти таймер
                 localStorage.removeItem("cyber_target_time");
 
                 keyDisplay.innerText = randomKey;
-                mainBtn.innerText = "✅ КАЛИД ГИРИФТА ШУД";
-                alert("✅ Калиди шумо омода шуд:\n\n" + randomKey);
+                mainBtn.innerText = "✅ КАЛИДИ НАВИ ШУМО ОМОДА АСТ";
+                alert("✅ Калиди нави шумо сохта шуд:\n\n" + randomKey);
 
             }).catch((err) => {
                 console.error(err);
