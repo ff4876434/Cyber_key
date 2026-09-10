@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CYBER VIP KEY GENERATOR</title>
 
-    <!-- FIREBASE SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -102,20 +101,16 @@
         <h2>CYBER HOST VIP</h2>
         <p>СИСТЕМАИ ГИРИФТАНИ КАЛИДИ VIP</p>
 
-        <!-- БЛОКИ РЕКЛАМАИ 1 -->
         <div class="ad-container">
             📢 РЕКЛАМАИ БОЛОИ (КОДИ ADSTERRA)
         </div>
 
-        <!-- ТАЙМЕР / ҶОИ КАЛИД -->
         <div id="keyDisplay" class="key-box">⏳ ИНТИЗОР ШАВЕД...</div>
 
-        <!-- БЛОКИ РЕКЛАМАИ 2 -->
         <div class="ad-container">
             📢 РЕКЛАМАИ ПАЁНИ (КОДИ ADSTERRA)
         </div>
 
-        <!-- ТУГМА -->
         <button id="mainBtn" onclick="getKeyDirectly()" class="btn-get" disabled>⏳ ИНТИЗОРИИ СОНИЯҲО...</button>
     </div>
 
@@ -132,78 +127,76 @@
         const keyDisplay = document.getElementById("keyDisplay");
         const mainBtn = document.getElementById("mainBtn");
 
-        let timerInterval = null;
-        let timeLeft = 30;
-
-        // Санҷиш: Агар корбар пештар калид гирифта бошад
         const localKey = localStorage.getItem("cyber_vip_key");
+
         if (localKey) {
             keyDisplay.innerText = localKey;
             mainBtn.innerText = "🔑 КАЛИДИ ШУМО ОМОДА АСТ";
             mainBtn.disabled = false;
         } else {
-            checkInternetAndStartTimer();
+            initTimer();
         }
 
-        // Функсияи оғози таймер
-        function startTimer() {
-            stopTimer(); // Пешгирии дубора фаъол шудан
-            timeLeft = 30;
+        function initTimer() {
+            // Мӯҳлати таймер 30 сония
+            const DURATION = 30 * 1000; 
+            let targetTime = localStorage.getItem("cyber_target_time");
 
-            timerInterval = setInterval(() => {
-                // Агар дар рафти ҳисоб интернет хомӯш шавад
+            // Агар интернет хомӯш бошад ё бори аввал бошад, вақтро аз нав месозем
+            if (!navigator.onLine) {
+                showOfflineState();
+                return;
+            }
+
+            if (!targetTime) {
+                targetTime = Date.now() + DURATION;
+                localStorage.setItem("cyber_target_time", targetTime);
+            } else {
+                targetTime = parseInt(targetTime);
+            }
+
+            const timer = setInterval(() => {
+                // Агар ҳангоми сонияшуморӣ интернет хомӯш шавад
                 if (!navigator.onLine) {
-                    resetTimerDueToNoInternet();
+                    clearInterval(timer);
+                    showOfflineState();
                     return;
                 }
 
-                timeLeft--;
-                keyDisplay.innerText = "⏳ ИНТИЗОР ШАВЕД: " + timeLeft + "s";
-                mainBtn.innerText = "⏳ ИНТИЗОРИИ " + timeLeft + " СОНИЯ...";
+                const now = Date.now();
+                const timeLeft = Math.ceil((targetTime - now) / 1000);
 
                 if (timeLeft <= 0) {
-                    stopTimer();
+                    clearInterval(timer);
+                    localStorage.removeItem("cyber_target_time");
                     keyDisplay.innerText = "🔑 KEY: ---------------";
                     mainBtn.innerText = "⚡ ГИРИФТАНИ КАЛИД";
                     mainBtn.disabled = false;
+                } else {
+                    keyDisplay.innerText = "⏳ ИНТИЗОР ШАВЕД: " + timeLeft + "s";
+                    mainBtn.innerText = "⏳ ИНТИЗОРИИ " + timeLeft + " СОНИЯ...";
                 }
-            }, 1000);
+            }, 500);
         }
 
-        function stopTimer() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-        }
-
-        // Агар интернет хомӯш шавад, таймер сӯхта аз нав мешавад
-        function resetTimerDueToNoInternet() {
-            stopTimer();
-            keyDisplay.innerText = "❌ ИНТЕРНЕТ ҒАЙРИФАЪОЛ АСТ!";
+        function showOfflineState() {
+            keyDisplay.innerText = "❌ ИНТЕРНЕТ ФАЪОЛ НЕСТ!";
             mainBtn.innerText = "⚠️ ИНТЕРНЕТРО ФАЪОЛ КУНЕД";
             mainBtn.disabled = true;
         }
 
-        function checkInternetAndStartTimer() {
-            if (navigator.onLine) {
-                startTimer();
-            } else {
-                resetTimerDueToNoInternet();
-            }
-        }
-
-        // НАЗОРАТИ АВТОМАТИИ ИНТЕРНЕТ (Online / Offline Events)
+        // Вақте интернет дубора пайваст мешавад, таймер аз нав кунуни мешавад
         window.addEventListener('online', () => {
             if (!localStorage.getItem("cyber_vip_key")) {
-                alert("🌐 Интернет пайваст шуд! Ҳисоби сонияҳо аз нав оғоз меёбад.");
-                startTimer();
+                // Тоза кардани вақти кӯҳна, то ки таймер аз 30 сония аз нав сар шавад
+                localStorage.removeItem("cyber_target_time");
+                initTimer();
             }
         });
 
         window.addEventListener('offline', () => {
             if (!localStorage.getItem("cyber_vip_key")) {
-                resetTimerDueToNoInternet();
+                showOfflineState();
             }
         });
 
@@ -217,8 +210,8 @@
             }
 
             if (!navigator.onLine) {
-                alert("❌ Интернет фаъол нест!");
-                resetTimerDueToNoInternet();
+                alert("❌ Интернет фаъол нест! Лутфан интернетро пайваст кунед.");
+                showOfflineState();
                 return;
             }
 
@@ -250,6 +243,9 @@
 
                 const randomKey = availableKeys[Math.floor(Math.random() * availableKeys.length)];
                 localStorage.setItem("cyber_vip_key", randomKey);
+
+                // Тоза кардани вақти таймер баъди гирифтани калид
+                localStorage.removeItem("cyber_target_time");
 
                 keyDisplay.innerText = randomKey;
                 mainBtn.innerText = "✅ КАЛИД ГИРИФТА ШУД";
